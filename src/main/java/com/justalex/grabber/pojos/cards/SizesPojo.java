@@ -1,4 +1,4 @@
-package com.justalex.grabber.pojos;
+package com.justalex.grabber.pojos.cards;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
