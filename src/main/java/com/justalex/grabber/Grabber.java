@@ -1,6 +1,6 @@
 package com.justalex.grabber;
 
-import com.justalex.grabber.pojos.cards.CardPojo;
+import com.justalex.grabber.pojos.wp_json.cards.CardPojo;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.IOException;
