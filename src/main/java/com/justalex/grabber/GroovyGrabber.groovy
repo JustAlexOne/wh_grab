@@ -15,9 +15,10 @@ class GroovyGrabber {
         assert allCardsFile.exists()
 //        def allCardsJson = new JsonSlurper().parseText(allCardsFile.text)
 
-        def text = new String(allCardsFile.getText())
-        print(text)
-        def allCardsJson = new JsonSlurper().parseText(text)
+        def text = new String("\"name\": \"\\u901a\\u7528\",".getBytes("UTF-8"), "UTF-8")
+
+        println(text)
+//        def allCardsJson = new JsonSlurper().parseText(text)
 //        def allCardsJson = new JsonSlurper().parseText(allCardsFile.text)
         println("Hello")
 //        println(allCardsJson.S034.colourText)
