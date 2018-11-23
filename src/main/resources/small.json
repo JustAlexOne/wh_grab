@@ -1,17 +1,50 @@
-{
-  "S034": {
-    "glory": 1,
-    "image_filename": "034_ENG-Immovable-Object.png",
-    "image_url": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/034_ENG-Immovable-Object.png",
-    "is_new": false,
-    "name": "Immovable Object",
-    "number": 34,
-    "restricted": "-",
-    "type": "objective",
-    "id": "S034",
-    "colourText": "\u2018I claim this shard in the name of the God-King. Flee, while you still have use of your limbs.\u2019 - Angharad Brightshield",
-    "rulesText": "Score this in an end phase if the same friendly fighter has held the same objective at the end of two consecutive action phases.",
-    "warbandId": "2",
-    "setId": "0"
-  }
-}
+"warbands": {
+"byId": {
+"0": {
+"id": "0",
+"name": "Universal",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Universal.png",
+"isUniversal": true
+},
+"12": {
+"id": "1",
+"name": "Garrek\u2019s Reavers",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Bloodbound.png",
+"isUniversal": false
+},
+"233": {
+"id": "2",
+"name": "Steelheart\u2019s Champions",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Steelheart.png",
+"isUniversal": false
+},
+"3": {
+"id": "3",
+"name": "Sepulchral Guard",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Sepulchral-1.png",
+"isUniversal": false
+},
+"4": {
+"id": "4",
+"name": "Ironskull\u2019s Boyz",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Ironjawz-1.png",
+"isUniversal": false
+},
+"5": {
+"id": "5",
+"name": "The Chosen Axes",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/02/Shadespire-Library-Icons-Fyreslayers.png",
+"isUniversal": false
+},
+"6": {
+"id": "6",
+"name": "Spiteclaw's Swarm",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/02/Shadespire-Library-Icons-Skaven.png",
+"isUniversal": false
+},
+"7": {
+"id": "7",
+"name": "Magore's Fiends",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/04/Shadespire-Library-Icons-Fiends2.png",
+"isUniversal": false
+},
