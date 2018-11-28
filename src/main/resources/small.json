@@ -1,50 +1,27 @@
-"warbands": {
-"byId": {
-"0": {
-"id": "0",
-"name": "Universal",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Universal.png",
-"isUniversal": true
+"10": {
+"id": "10",
+"name": "\\u957f\\u8001\\u4e4b\\u773c\\u5957\\u88c5",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/10/WHUW-Library-Icons-Tzeentch.png",
+"series": 2
+},
+"11": {
+"id": "11",
+"name": "\\u76d6\\u5229\\u514b\\u6536\\u5272\\u8005\\u5957\\u88c5",
+"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Bloodbound.png",
+"series": 2
 },
 "12": {
-"id": "1",
-"name": "Garrek\u2019s Reavers",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Bloodbound.png",
-"isUniversal": false
-},
-"233": {
-"id": "2",
-"name": "Steelheart\u2019s Champions",
+"id": "12",
+"name": "\\u94a2\\u94c1\\u4e4b\\u5fc3\\u52c7\\u58eb\\u5957\\u88c5",
 "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Steelheart.png",
-"isUniversal": false
+"series": 2
+}
 },
-"3": {
-"id": "3",
-"name": "Sepulchral Guard",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Sepulchral-1.png",
-"isUniversal": false
+"allIds": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+}
 },
-"4": {
-"id": "4",
-"name": "Ironskull\u2019s Boyz",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Ironjawz-1.png",
-"isUniversal": false
-},
-"5": {
-"id": "5",
-"name": "The Chosen Axes",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/02/Shadespire-Library-Icons-Fyreslayers.png",
-"isUniversal": false
-},
-"6": {
-"id": "6",
-"name": "Spiteclaw's Swarm",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/02/Shadespire-Library-Icons-Skaven.png",
-"isUniversal": false
-},
-"7": {
-"id": "7",
-"name": "Magore's Fiends",
-"icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/04/Shadespire-Library-Icons-Fiends2.png",
-"isUniversal": false
-},
+"rules": {
+"restricted": ["S234", "S235", "S243", "S252", "S257", "S280", "S284", "S321", "S332", "S343", "S348", "S369", "S376", "S372", "S373", "S393", "S395", "S410", "S412", "S420", "S424", "NV317", "NV436", "NV342", "NV319", "NV539"],
+"banned": ["S329", "S347", "S368"]
+}
+}
