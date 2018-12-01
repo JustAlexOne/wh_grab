@@ -1,4 +1,4 @@
-package com.justalex.card_lib;
+package com.justalex.imageCleanup;
 
 import org.joda.time.DateTime;
 
