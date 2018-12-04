@@ -9,8 +9,17 @@ import java.awt.image.BufferedImage
 class ImageWorker {
 
     BufferedImage getImageFromUrl(String url) {
-        def inputStream = Unirest.get(url).asBinary().getBody()
+        InputStream inputStream = getStreamFromUrl(url)
         return ImageIO.read(inputStream)
+    }
+
+    byte[] getBytesFromUrl(String url) {
+        return getStreamFromUrl(url).bytes
+    }
+
+    private InputStream getStreamFromUrl(String url) {
+        def inputStream = Unirest.get(url).asBinary().getBody()
+        inputStream
     }
 
     void saveImage(BufferedImage img, String destination) {

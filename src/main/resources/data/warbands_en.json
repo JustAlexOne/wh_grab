@@ -1,0 +1,99 @@
+{
+  "warbands": {
+    "byId": {
+      "0": {
+        "id": "0",
+        "name": "Universal",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Universal.png",
+        "isUniversal": true
+      },
+      "1": {
+        "id": "1",
+        "name": "Garrek’s Reavers",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Bloodbound.png",
+        "isUniversal": false
+      },
+      "2": {
+        "id": "2",
+        "name": "Steelheart’s Champions",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Steelheart.png",
+        "isUniversal": false
+      },
+      "3": {
+        "id": "3",
+        "name": "Sepulchral Guard",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Sepulchral-1.png",
+        "isUniversal": false
+      },
+      "4": {
+        "id": "4",
+        "name": "Ironskull’s Boyz",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2017/12/Shadespire-Library-Icons-Ironjawz-1.png",
+        "isUniversal": false
+      },
+      "5": {
+        "id": "5",
+        "name": "The Chosen Axes",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/02/Shadespire-Library-Icons-Fyreslayers.png",
+        "isUniversal": false
+      },
+      "6": {
+        "id": "6",
+        "name": "Spiteclaw's Swarm",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/02/Shadespire-Library-Icons-Skaven.png",
+        "isUniversal": false
+      },
+      "7": {
+        "id": "7",
+        "name": "Magore's Fiends",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/04/Shadespire-Library-Icons-Fiends2.png",
+        "isUniversal": false
+      },
+      "8": {
+        "id": "8",
+        "name": "The Farstriders",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/04/Shadespire-Library-Icons-Rangers.png",
+        "isUniversal": false
+      },
+      "9": {
+        "id": "9",
+        "name": "Stormsire’s Cursebreakers",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/09/WHUW-Library-Icons-Sacrosanct.png",
+        "isUniversal": false
+      },
+      "10": {
+        "id": "10",
+        "name": "Thorns of the Briar Queen",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/09/WHUW-Library-Icons-Nighthaunt.png",
+        "isUniversal": false
+      },
+      "11": {
+        "id": "11",
+        "name": "Eyes of the Nine",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/10/WHUW-Library-Icons-Tzeentch.png",
+        "isUniversal": false
+      },
+      "12": {
+        "id": "12",
+        "name": "Zarbag's Gitz",
+        "icon": "https://warhammerunderworlds.com/wp-content/uploads/sites/6/2018/10/WHUW-Library-Icons-Moonclan.png",
+        "isUniversal": false
+      }
+    },
+    "allIds": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+    ]
+  }
+}

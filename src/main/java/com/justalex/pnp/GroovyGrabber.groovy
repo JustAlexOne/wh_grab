@@ -22,10 +22,30 @@ class GroovyGrabber {
         def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
 //        def dataFileJson = PnpWorker.readDataFile("src/main/resources/a_10_cards.json")
 
-        def cards = dataFileJson.en.cards.byId
-        println("Cards total: ${cards.size()}")
+        def cards = dataFileJson.en.cards.byId.collect {
+            it.getValue()
+        }
+//        cards = cards.subList(0, 200)
 
+//        println(cards[0])
+        println("All cards: ${cards.size()}")
+        cards.unique {a,b -> a.name <=> b.name}
+        println("Unique cards: ${cards.size()}")
+
+        def warband1 = cards.findAll { it.warbandId == "1" }
+        println("Warband1: ${warband1.size()}")
+
+//        def dups = warband1.clone() - warband1.unique {a,b -> a.name <=> b.name}
+        def cardTypes = ["objective", "upgrade", "ploy", "gambitspell"]
+//        cards.sort {it.warbandId as Integer}.groupBy { it.type }
+        cards.sort{a,b -> a.warbandId as Integer <=> b.warbandId as Integer ?: cardTypes.indexOf(a.type) <=> cardTypes.indexOf(b.type)}
+        printAllCards(cards)
+
+
+        // todo implement card backs
+        /*
         ImageWorker imageWorker = new ImageWorker()
+
         cards.each {it ->
             def value = it.getValue()
             def id = value.id
@@ -51,11 +71,6 @@ class GroovyGrabber {
 //            return false
         }
         println("parsed")
-//        println("Filenames size: ${fileNamesList.size()}")
-//        fileNamesList.each {println(it)}
-//        def warbands = dataFileJson.en.warbands.byId
-//        println("Warbands total: ${warbands.size()}")
-//        warbands.each {println(it)}
 
 //       parsedJson def list = ["a", "b", "c"]
 //        def myMap = [user1:[name:"John", age: 19], user2:[name:"Jack", age: 21], user3:[name:"Mike", age: 27]]
@@ -73,23 +88,6 @@ class GroovyGrabber {
 //        println(cards.S001.image_url)
 //        String str = cards.S001.image_url
 
-//        def imageWorker = new ImageWorker()
-//        println(cards)
-//        def counter = 1;
-//        cards.entrySet().each {
-//            def card = it.getValue()
-////            String fileName = card.image_filename
-//            String fileName = "src/main/resources/imgs/${counter++}.png"
-//            String cardName = card.name
-//            String url = card.image_url
-//            println("Card: $cardName")
-//            println("Filename: $fileName")
-//            println("Url: $url")
-//            BufferedImage imageFromUrl = imageWorker.getImageFromUrl(url)
-//            imageWorker.saveImage(imageFromUrl, fileName)
-//        }
-
-
         /*def bytes = Unirest.get(str).asBinary().getBody().bytes
         Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream("iTextImageExample.pdf"));
@@ -105,5 +103,9 @@ class GroovyGrabber {
         println("Done!")
     }
 
-
+    static def printAllCards(List list) {
+        list.indexed().each { index, it ->
+            println("$index card: setId=$it.setId, warbandId=$it.warbandId, type=$it.type, id=$it.id, name=$it.name, text=$it.rulesText")
+        }
+    }
 }
