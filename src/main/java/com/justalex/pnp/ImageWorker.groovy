@@ -26,4 +26,10 @@ class ImageWorker {
         ImageIO.write(img, "PNG", new File(destination))
     }
 
+    void downloadAndSetImagesForCards(List cards) {
+        cards.each {
+            def bytes = getBytesFromUrl(it.image_url)
+            it.imageBytes = bytes
+        }
+    }
 }

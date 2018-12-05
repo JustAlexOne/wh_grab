@@ -31,16 +31,42 @@ class GroovyGrabber {
         println("All cards: ${cards.size()}")
         cards.unique {a,b -> a.name <=> b.name}
         println("Unique cards: ${cards.size()}")
+        println("Leaders: ${cards.findAll{it.setId == "7"}.size()}")
+        // 248 + 116 + 378 = 742 unique cards
 
-        def warband1 = cards.findAll { it.warbandId == "1" }
-        println("Warband1: ${warband1.size()}")
+        /*All cards: 814
+        Unique cards: 742
+        Leaders: 60*/
 
-//        def dups = warband1.clone() - warband1.unique {a,b -> a.name <=> b.name}
+        println("Warband0: ${cards.findAll { it.warbandId == "0" }.size()}")
+        println("Warband1: ${cards.findAll { it.warbandId == "1" }.size()}")
+        println("Warband2: ${cards.findAll { it.warbandId == "2" }.size()}")
+        println("Warband3: ${cards.findAll { it.warbandId == "3" }.size()}")
+        println("Warband4: ${cards.findAll { it.warbandId == "4" }.size()}")
+        println("Warband5: ${cards.findAll { it.warbandId == "5" }.size()}")
+        println("Warband6: ${cards.findAll { it.warbandId == "6" }.size()}")
+        println("Warband7: ${cards.findAll { it.warbandId == "7" }.size()}")
+        println("Warband8: ${cards.findAll { it.warbandId == "8" }.size()}")
+        println("Warband9: ${cards.findAll { it.warbandId == "9" }.size()}")
+        println("Warband10: ${cards.findAll { it.warbandId == "10" }.size()}")
+        println("Warband11: ${cards.findAll { it.warbandId == "11" }.size()}")
+        println("Warband12: ${cards.findAll { it.warbandId == "12" }.size()}")
+
         def cardTypes = ["objective", "upgrade", "ploy", "gambitspell"]
-//        cards.sort {it.warbandId as Integer}.groupBy { it.type }
+        //todo make tests, and then change to use enum instrad of list cardTypes
         cards.sort{a,b -> a.warbandId as Integer <=> b.warbandId as Integer ?: cardTypes.indexOf(a.type) <=> cardTypes.indexOf(b.type)}
-        printAllCards(cards)
+//        printAllCards(cards)
 
+        def pdfWorker = new PdfWorker("cards_pnp.pdf")
+        def imageWorker = new ImageWorker()
+//        cards = cards.subList(0,18)
+
+//        imageWorker.downloadAndSetImagesForCards(cards)
+
+        pdfWorker.addCardsToPdf(cards)
+
+
+        pdfWorker.finish()
 
         // todo implement card backs
         /*
