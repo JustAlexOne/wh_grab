@@ -36,8 +36,8 @@ class PdfWorker {
         def a_3 = a_9.collect { it.collate(3) }
         // todo
         println(a_3.size())
-        def a_3_reversed = a_3.each {a_9_list -> a_9_list.collect {it.reverse()}}
-//        a_3_reversed.each { println(it) }
+        def a_3_reversed = a_3.collect { it.collect {it.reverse()}}
+        a_3_reversed.each {println(it)}
         println("------------------------")
 
 //        def myList = [[1, 2, 3], [1, 2, 3]]
@@ -194,7 +194,15 @@ class PdfWorker {
             int missingCells = 3 - (cardsSize % 3)
             missingCells.times { cardsCollatedBy9.add("") }
         }
-        cardsCollatedBy9.each { card ->
+        println("Cards:")
+        cardsCollatedBy9.each {println(it.id)}
+
+        def cardsCollatedBy3 = cardsCollatedBy9.collect {it.collate(3)}
+        def cardsCollatedBy3_reversed = cardsCollatedBy3.collect {it.collect {it.reverse()}}
+
+        cardsCollatedBy3_reversed.each {println(it)}
+
+        /*cardsCollatedBy3.each { card ->
             def cell = initTableCellWithImage(Image.getInstance(IMAGE_POWER_CARD_BACK.toURI().toURL()))
             if (card == "") {
                 cell = initEmptyCell()
@@ -204,8 +212,11 @@ class PdfWorker {
             }
 //            table.addCell(it)
             table.addCell(cell)
-        }
-        cardsCollatedBy3 = cardsCollatedBy9.collate(3).collect(it.reverse())
+        }*/
+//        def a_3_reversed = a_3.collect { it.collect {it.reverse()}}
+//        a_3_reversed.each {println(it)}
+
+
 
     }
 
