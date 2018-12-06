@@ -27,9 +27,13 @@ class ImageWorker {
     }
 
     void downloadAndSetImagesForCards(List cards) {
-        cards.each {
+        println("Downloading [$cards.size] cards.")
+        cards.indexed().each { index, it ->
+            println("$index: id: $it.id, card: $it.name")
             def bytes = getBytesFromUrl(it.image_url)
             it.imageBytes = bytes
         }
+        println("Done downloading cards")
     }
+
 }

@@ -31,42 +31,33 @@ class GroovyGrabber {
         println("All cards: ${cards.size()}")
         cards.unique {a,b -> a.name <=> b.name}
         println("Unique cards: ${cards.size()}")
-        println("Leaders: ${cards.findAll{it.setId == "7"}.size()}")
+//        println("Leaders: ${cards.findAll{it.setId == "7"}.size()}")
         // 248 + 116 + 378 = 742 unique cards
 
         /*All cards: 814
         Unique cards: 742
         Leaders: 60*/
-
-        println("Warband0: ${cards.findAll { it.warbandId == "0" }.size()}")
-        println("Warband1: ${cards.findAll { it.warbandId == "1" }.size()}")
-        println("Warband2: ${cards.findAll { it.warbandId == "2" }.size()}")
-        println("Warband3: ${cards.findAll { it.warbandId == "3" }.size()}")
-        println("Warband4: ${cards.findAll { it.warbandId == "4" }.size()}")
-        println("Warband5: ${cards.findAll { it.warbandId == "5" }.size()}")
-        println("Warband6: ${cards.findAll { it.warbandId == "6" }.size()}")
-        println("Warband7: ${cards.findAll { it.warbandId == "7" }.size()}")
-        println("Warband8: ${cards.findAll { it.warbandId == "8" }.size()}")
-        println("Warband9: ${cards.findAll { it.warbandId == "9" }.size()}")
-        println("Warband10: ${cards.findAll { it.warbandId == "10" }.size()}")
-        println("Warband11: ${cards.findAll { it.warbandId == "11" }.size()}")
-        println("Warband12: ${cards.findAll { it.warbandId == "12" }.size()}")
+//        printWarbands(cards)
 
         def cardTypes = ["objective", "upgrade", "ploy", "gambitspell"]
         //todo make tests, and then change to use enum instrad of list cardTypes
         cards.sort{a,b -> a.warbandId as Integer <=> b.warbandId as Integer ?: cardTypes.indexOf(a.type) <=> cardTypes.indexOf(b.type)}
 //        printAllCards(cards)
 
-        def pdfWorker = new PdfWorker("cards_pnp.pdf")
+        def destinationFile = "cards_pnp.pdf"
+        def pdfWorker = new PdfWorker(destinationFile)
         def imageWorker = new ImageWorker()
-//        cards = cards.subList(0,18)
+//        cards = cards.findAll{it.id in ["S010", "S011", "S004", "S005", "S020", "S021", "S022", "NV471", "S001", "S002", "S003", "S007"]}
+//        println(cards.collect {"$it.id type: $it.type"})
+        Collections.shuffle(cards)
+        cards = cards.subList(0,3)
 
-//        imageWorker.downloadAndSetImagesForCards(cards)
+        imageWorker.downloadAndSetImagesForCards(cards)
 
         pdfWorker.addCardsToPdf(cards)
 
-
-        pdfWorker.finish()
+        pdfWorker.finish() // todo uncomment
+        pdfWorker.insertPageNumbers(destinationFile, "cards_pnp_numbered.pdf")
 
         // todo implement card backs
         /*
@@ -127,6 +118,15 @@ class GroovyGrabber {
         document.close();
 */
         println("Done!")
+    }
+
+    private static void printWarbands(cards) {
+        def warbandsList = new JsonSlurper().parseText(new File("src/main/resources/data/warbands_en.json").text).warbands.byId.collect {
+            it.getValue()
+        }
+        warbandsList.each { warband ->
+            println("Warband name=$warband.name, id=$warband.id cards: ${cards.findAll { card -> card.warbandId == warband.id }.size()}")
+        }
     }
 
     static def printAllCards(List list) {

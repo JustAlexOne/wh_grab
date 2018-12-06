@@ -14,4 +14,9 @@ class PnpWorker {
         return new JsonSlurper().parseText(dataFileText)
     }
 
+    public static void main(String[] args) {
+        def i = 3 % 9
+        println(9 - i)
+    }
+
 }

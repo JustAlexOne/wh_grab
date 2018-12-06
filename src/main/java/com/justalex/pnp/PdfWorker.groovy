@@ -1,11 +1,17 @@
 package com.justalex.pnp
 
 import com.itextpdf.text.Document
+import com.itextpdf.text.DocumentException
+import com.itextpdf.text.Element
 import com.itextpdf.text.Image
 import com.itextpdf.text.PageSize
 import com.itextpdf.text.Phrase
+import com.itextpdf.text.pdf.ColumnText
+import com.itextpdf.text.pdf.PdfContentByte
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
+import com.itextpdf.text.pdf.PdfReader
+import com.itextpdf.text.pdf.PdfStamper
 import com.itextpdf.text.pdf.PdfWriter
 import groovy.io.FileType
 
@@ -13,40 +19,20 @@ class PdfWorker {
 
     static final File IMAGE_OBJECTIVE_CARD_BACK = new File("src/main/resources/data/card_backs/objective_back.png")
     static final File IMAGE_POWER_CARD_BACK = new File("src/main/resources/data/card_backs/power_back.png")
+    static final File IMAGE_EMPTY = new File("src/main/resources/data/card_backs/empty_card.png")
 
     private File destinationFile
     Document document
 
     PdfWorker(File destinationFile) {
         this.destinationFile = destinationFile
-        document = new Document(PageSize.A4, 15, 15, 15, 15)
+        document = new Document(PageSize.A4, 15, 15, 20, 20)
         PdfWriter.getInstance(document, new FileOutputStream(destinationFile))
         document.open()
     }
 
     PdfWorker(String fileName) {
         this(new File(fileName))
-    }
-
-    public static void main(String[] args) {
-        def myList = 1..27
-        def a_9 = myList.collate(9)
-        a_9.each { println(it) }
-        println("------------------------")
-        def a_3 = a_9.collect { it.collate(3) }
-        // todo
-        println(a_3.size())
-        def a_3_reversed = a_3.collect { it.collect {it.reverse()}}
-        a_3_reversed.each {println(it)}
-        println("------------------------")
-
-//        def myList = [[1, 2, 3], [1, 2, 3]]
-//        myList.each { println(it) }
-//        myList = myList.collect { it.reverse() }
-//        myList.each { println(it) }
-//
-//        def missingCells = 3 - 8 % 3
-//        println(missingCells)
     }
 
     static void main2(String[] args) {
@@ -117,46 +103,9 @@ class PdfWorker {
         document.close();*/
     }
 
-    void addImagesToPdf(List<File> imageFiles) {
-        // 550x770
-        // real card size = 63.5 x 88 mm
-        // user units: 178.58268 x 249.44904
-        PdfPTable table = createImagesTableFromImageFiles(imageFiles)
-        document.add(table)
-    }
-
-    PdfPTable createImagesTableFromImageFiles(List<File> imageFiles) {
-        List<Image> images = imageFiles.collect { return Image.getInstance(it.getAbsolutePath()) }
-        return createImagesTableFromImages(images)
-    }
-
-    PdfPTable createImagesTableFromImages(List<Image> images) {
-        PdfPTable table = new PdfPTable(3)
-//        table.setWidthPercentage(98)
-        float resWidth = 535.74805f
-//        float resWidth = 178.58268f * 3f
-        table.setTotalWidth(resWidth)
-        table.setLockedWidth(true)
-//        table.setSpacingBefore(0f);
-//        table.setSpacingAfter(0f);
-
-        images.each {
-//            image.scalePercent(30)
-            PdfPCell cell = new PdfPCell()
-            cell.setPadding(0f)
-//            cell.setFixedHeight(249.44904f)
-            cell.setImage(it)
-
-//            table.addCell(it)
-            table.addCell(cell)
-        }
-        addEmptyCellsToCompleteTableRow(images.size(), table)
-        return table
-    }
-
     private void addEmptyCellsToCompleteTableRow(int imagesSize, PdfPTable table) {
-        int extraCells = (imagesSize % 3)
-        extraCells = extraCells == 0 ? 0 : 3 - extraCells
+        int extraCells = (imagesSize % 9)
+        extraCells = extraCells == 0 ? 0 : 9 - extraCells
         println("Adding $extraCells extra cells")
         extraCells.times {
             table.addCell(initEmptyCell())
@@ -168,7 +117,8 @@ class PdfWorker {
     }
 
     def addCardsToPdf(List cards) {
-//        validateCardsImageBytes(cards)
+        println("Adding cards to pdf")
+        validateCardsImageBytes(cards)
         def cardsBy9 = cards.collate(9)
 //        println("Last size: ${cardsBy9.last().size()}")
 //        cardsBy9.last().each {println(it)}
@@ -176,52 +126,57 @@ class PdfWorker {
         cardsBy9.each {
             put9CardsIntoTable(it, table)
             if (it == cardsBy9.last()) {
-                addEmptyCellsToCompleteTableRow(cardsBy9.size(), table)
+                addEmptyCellsToCompleteTableRow(it.size(), table)
             }
 
             putCardBackingsIntoTable(it, table)
-            if (it == cardsBy9.last()) {
-                addEmptyCellsToCompleteTableRow(cardsBy9.size(), table)
-            }
-
+//            if (it == cardsBy9.last()) {
+//                addEmptyCellsToCompleteTableRow(cardsBy9.size(), table)
+//            }
         }
+        document.add(table)
     }
 
-    def putCardBackingsIntoTable(List cardsCollatedBy9, PdfPTable table) {
-        def cardsSize = cardsCollatedBy9.size()
+    def putCardBackingsIntoTable(List list_9_cards, PdfPTable table) {
+        println("Putting card backings")
+        def cardsSize = list_9_cards.size()
         assert cardsSize <= 9
         if (cardsSize < 9) {
-            int missingCells = 3 - (cardsSize % 3)
-            missingCells.times { cardsCollatedBy9.add("") }
+            int missingCells = 9 - (cardsSize % 9)
+            missingCells.times { list_9_cards.add("") }
         }
-        println("Cards:")
-        cardsCollatedBy9.each {println(it.id)}
+//        println("Cards: $list_9_cards")
+//        list_9_cards.each {println(it.id)}
 
-        def cardsCollatedBy3 = cardsCollatedBy9.collect {it.collate(3)}
+        def list_by_3_cards = list_9_cards.collate(3)
+//        println("Basic")
+//        list_by_3_cards.each { println(it) }
+        def list_by_3_cards_reversed = list_by_3_cards.collect { it.reverse() }
+//        println("Reversed")
+//        list_by_3_cards_reversed.each { println(it) }
+        /*
         def cardsCollatedBy3_reversed = cardsCollatedBy3.collect {it.collect {it.reverse()}}
 
-        cardsCollatedBy3_reversed.each {println(it)}
+        cardsCollatedBy3_reversed.each {println(it)}*/
+//        println("list_by_3_cards_reversed.class = ${list_by_3_cards_reversed.getClass()}")
+//        list_by_3_cards_reversed.each { println(it.size()) }
 
-        /*cardsCollatedBy3.each { card ->
-            def cell = initTableCellWithImage(Image.getInstance(IMAGE_POWER_CARD_BACK.toURI().toURL()))
+        list_by_3_cards_reversed.flatten().each { card ->
+            def cell
             if (card == "") {
                 cell = initEmptyCell()
-            }
-            if (card.type.equalsIgnoreCase(CardType.OBJECTIVE)) {
+            } else if (card.type.equalsIgnoreCase(CardType.OBJECTIVE.toString())) {
                 cell = initTableCellWithImage(Image.getInstance(IMAGE_OBJECTIVE_CARD_BACK.toURI().toURL()))
+            } else {
+                cell = initTableCellWithImage(Image.getInstance(IMAGE_POWER_CARD_BACK.toURI().toURL()))
             }
-//            table.addCell(it)
             table.addCell(cell)
-        }*/
-//        def a_3_reversed = a_3.collect { it.collect {it.reverse()}}
-//        a_3_reversed.each {println(it)}
-
-
-
+        }
     }
 
     PdfPCell initEmptyCell() {
-        return new PdfPCell(new Phrase(""))
+        return initTableCellWithImage(Image.getInstance(IMAGE_EMPTY.toURI().toURL()))
+//        return new PdfPCell(new Phrase("empty"))
     }
 
     private PdfPCell initTableCellWithImage(Image image) {
@@ -233,8 +188,9 @@ class PdfWorker {
 
     private PdfPTable initPdfTable() {
         def table = new PdfPTable(3)
-        //        table.setWidthPercentage(98)
+//                table.setWidthPercentage(98)
         float resWidth = 535.74805f
+        resWidth = 540f
 //        float resWidth = 178.58268f * 3f
         table.setTotalWidth(resWidth)
         table.setLockedWidth(true)
@@ -245,6 +201,7 @@ class PdfWorker {
 
     def put9CardsIntoTable(List cardsCollatedBy9, PdfPTable table) {
         assert cardsCollatedBy9.size() <= 9
+        println("Putting ${cardsCollatedBy9.size()} cards")
         cardsCollatedBy9.each { card ->
 //            image.scalePercent(30)
 //            PdfPCell cell = new PdfPCell()
@@ -255,6 +212,20 @@ class PdfWorker {
 //            table.addCell(it)
             table.addCell(cell)
         }
+    }
+
+    void insertPageNumbers(String src, String dest) throws IOException, DocumentException {
+        PdfReader reader = new PdfReader(src)
+        int n = reader.getNumberOfPages()
+        PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(dest))
+        PdfContentByte pagecontent
+        for (int i = 0; i < n; ) {
+            pagecontent = stamper.getOverContent(++i)
+            ColumnText.showTextAligned(pagecontent, Element.ALIGN_LEFT,
+                    new Phrase(String.format("%s of %s", i, n)), 20, 20, 0)
+        }
+        stamper.close()
+        reader.close()
     }
 
     private void validateCardsImageBytes(List cards) {
