@@ -199,7 +199,8 @@ class PdfWorker {
         def table = new PdfPTable(3)
 //                table.setWidthPercentage(98)
         float resWidth = 535.74805f
-        resWidth = 540f // 540 is good
+//        resWidth = 540f
+        println("Table width: $resWidth")
 //        float resWidth = 178.58268f * 3f
         table.setTotalWidth(resWidth)
         table.setLockedWidth(true)

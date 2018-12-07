@@ -49,8 +49,8 @@ class GroovyGrabber {
         def imageWorker = new ImageWorker()
 //        cards = cards.findAll{it.id in ["S010", "S011", "S004", "S005", "S020", "S021", "S022", "NV471", "S001", "S002", "S003", "S007"]}
 //        println(cards.collect {"$it.id type: $it.type"})
-        Collections.shuffle(cards)
-        cards = cards.subList(0,6)
+//        Collections.shuffle(cards)
+//        cards = cards.subList(0,6)
 
         imageWorker.downloadAndSetImagesForCards(cards)
 
