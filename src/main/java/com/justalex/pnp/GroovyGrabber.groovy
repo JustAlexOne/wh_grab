@@ -4,12 +4,14 @@ import com.itextpdf.text.Document
 import com.itextpdf.text.Image
 import com.itextpdf.text.pdf.PdfWriter
 import com.mashape.unirest.http.Unirest
+import groovy.io.FileType
 import groovy.json.JsonSlurper
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.awt.image.RenderedImage
 import java.nio.charset.Charset
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -19,6 +21,50 @@ class GroovyGrabber {
 
 
     static void main(String[] args) {
+
+        // save card images to files
+        def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
+        def cards = dataFileJson.en.cards.byId.collect { it.getValue() }
+        println("All cards: ${cards.size()}")
+        cards.unique { a, b -> a.name <=> b.name }
+        println("Unique cards: ${cards.size()}")
+
+//        cards.sort { a, b -> a.warbandId as Integer <=> b.warbandId as Integer }
+//        printAllCards(cards)
+
+        def objective_cards = cards.findAll { it.type == "objective" }
+        println("objective_cards: $objective_cards.size")
+
+        def power_cards = cards.findAll { it.type != "objective" }
+        println("power_cards: $power_cards.size")
+
+        def imageWorker = new ImageWorker()
+
+        println("Downloading objective cards")
+//        objective_cards = objective_cards.subList(0, 3)
+        objective_cards.indexed().each { index, card ->
+            def card_id = card.id
+            def warbandId = card.warbandId
+            // todo try putting each warband in separate folder
+            println("$index: $card_id")
+            Files.write(Paths.get("card_images/objective_cards/cards/$warbandId/${card_id}.png"), imageWorker.getBytesFromUrl(card.image_url))
+        }
+
+        println("Downloading power cards")
+//        power_cards = objective_cards.subList(0, 3)
+        power_cards.indexed().each { index, card ->
+            def card_id = card.id
+            println("$index: $card_id")
+            Files.write(Paths.get("card_images/power_cards/cards/${card_id}.png"), imageWorker.getBytesFromUrl(card.image_url))
+        }
+        assert new File("card_images/objective_cards/cards").listFiles().length == 247
+        assert new File("card_images/power_cards/cards").listFiles().length == 495
+//        byte[] bytes = imageWorker.getBytesFromUrl(objective_cards[0].image_url)
+//        Files.write(Paths.get("card1.png"), bytes)
+
+    }
+
+    static void main2(String[] args) {
         def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
 //        def dataFileJson = PnpWorker.readDataFile("src/main/resources/a_10_cards.json")
 
@@ -29,7 +75,7 @@ class GroovyGrabber {
 
 //        println(cards[0])
         println("All cards: ${cards.size()}")
-        cards.unique {a,b -> a.name <=> b.name}
+        cards.unique { a, b -> a.name <=> b.name }
         println("Unique cards: ${cards.size()}")
 //        println("Leaders: ${cards.findAll{it.setId == "7"}.size()}")
         // 248 + 116 + 378 = 742 unique cards
@@ -41,7 +87,7 @@ class GroovyGrabber {
 
         def cardTypes = ["objective", "upgrade", "ploy", "gambitspell"]
         //todo make tests, and then change to use enum instrad of list cardTypes
-        cards.sort{a,b -> a.warbandId as Integer <=> b.warbandId as Integer ?: cardTypes.indexOf(a.type) <=> cardTypes.indexOf(b.type)}
+        cards.sort { a, b -> a.warbandId as Integer <=> b.warbandId as Integer ?: cardTypes.indexOf(a.type) <=> cardTypes.indexOf(b.type) }
 //        printAllCards(cards)
 
         def destinationFile = "cards_pnp.pdf"
