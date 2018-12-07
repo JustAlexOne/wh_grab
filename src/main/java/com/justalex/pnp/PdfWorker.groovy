@@ -1,5 +1,6 @@
 package com.justalex.pnp
 
+import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Document
 import com.itextpdf.text.DocumentException
 import com.itextpdf.text.Element
@@ -181,7 +182,15 @@ class PdfWorker {
 
     private PdfPCell initTableCellWithImage(Image image) {
         PdfPCell cell = new PdfPCell()
-        cell.setPadding(0f)
+//        cell.setPadding(0.278f)
+        cell.setPadding(0.35f)
+//        cell.setPaddingBottom(0.1f)
+//        cell.setPaddingTop(0.1f)
+//        cell.setPaddingLeft(0.1f)
+//        cell.setPaddingRight(0.1f)
+        cell.setBorderColor(BaseColor.WHITE)
+//        cell.setBorderWidth(5f)
+
         cell.setImage(image)
         return cell
     }
@@ -190,7 +199,7 @@ class PdfWorker {
         def table = new PdfPTable(3)
 //                table.setWidthPercentage(98)
         float resWidth = 535.74805f
-        resWidth = 540f
+        resWidth = 540f // 540 is good
 //        float resWidth = 178.58268f * 3f
         table.setTotalWidth(resWidth)
         table.setLockedWidth(true)

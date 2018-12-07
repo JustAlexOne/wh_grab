@@ -50,7 +50,7 @@ class GroovyGrabber {
 //        cards = cards.findAll{it.id in ["S010", "S011", "S004", "S005", "S020", "S021", "S022", "NV471", "S001", "S002", "S003", "S007"]}
 //        println(cards.collect {"$it.id type: $it.type"})
         Collections.shuffle(cards)
-        cards = cards.subList(0,3)
+        cards = cards.subList(0,6)
 
         imageWorker.downloadAndSetImagesForCards(cards)
 
@@ -61,35 +61,7 @@ class GroovyGrabber {
 
         // todo implement card backs
         /*
-        ImageWorker imageWorker = new ImageWorker()
-
-        cards.each {it ->
-            def value = it.getValue()
-            def id = value.id
-            println(id)
-            String imageUrl = URLDecoder.decode(value.image_url, "UTF-8")
-            String image_filename = imageUrl.split("/")[-1]
-            println("URL: $imageUrl")
-            println("imageFileName: $image_filename")
-            BufferedImage imageFromUrl = imageWorker.getImageFromUrl(imageUrl)
-            imageWorker.saveImage(imageFromUrl, "card_images/all/$image_filename")
-//            def imageFilename = value.image_filename
-//            if (imageFilename != null) {
-//                assert image_filename == imageFilename
-//            }
-//            if (id == "L60") {
-//                return true
-//            } else {
-//                String filename = value.image_filename
-//                def image_url = value.image_url
-////                def image_url = URLDecoder.decode(value.image_url, "UTF-8")
-//                assert image_url.contains(filename)
-//            }
-//            return false
-        }
-        println("parsed")
-
-//       parsedJson def list = ["a", "b", "c"]
+            def list = ["a", "b", "c"]
 //        def myMap = [user1:[name:"John", age: 19], user2:[name:"Jack", age: 21], user3:[name:"Mike", age: 27]]
 //        list.each {println(it)}
 //        myMap.each {println(it)}
