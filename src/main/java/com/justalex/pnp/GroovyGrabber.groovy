@@ -8,61 +8,19 @@ import groovy.io.FileType
 import groovy.json.JsonSlurper
 
 import javax.imageio.ImageIO
+import java.awt.Color
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.awt.image.RenderedImage
 import java.nio.charset.Charset
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
 class GroovyGrabber {
-
-
-    static void main(String[] args) {
-
-        // save card images to files
-        def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
-        def cards = dataFileJson.en.cards.byId.collect { it.getValue() }
-        println("All cards: ${cards.size()}")
-        cards.unique { a, b -> a.name <=> b.name }
-        println("Unique cards: ${cards.size()}")
-
-//        cards.sort { a, b -> a.warbandId as Integer <=> b.warbandId as Integer }
-//        printAllCards(cards)
-
-        def objective_cards = cards.findAll { it.type == "objective" }
-        println("objective_cards: $objective_cards.size")
-
-        def power_cards = cards.findAll { it.type != "objective" }
-        println("power_cards: $power_cards.size")
-
-        def imageWorker = new ImageWorker()
-
-        println("Downloading objective cards")
-//        objective_cards = objective_cards.subList(0, 3)
-        objective_cards.indexed().each { index, card ->
-            def card_id = card.id
-            def warbandId = card.warbandId
-            // todo try putting each warband in separate folder
-            println("$index: $card_id")
-            Files.write(Paths.get("card_images/objective_cards/cards/$warbandId/${card_id}.png"), imageWorker.getBytesFromUrl(card.image_url))
-        }
-
-        println("Downloading power cards")
-//        power_cards = objective_cards.subList(0, 3)
-        power_cards.indexed().each { index, card ->
-            def card_id = card.id
-            println("$index: $card_id")
-            Files.write(Paths.get("card_images/power_cards/cards/${card_id}.png"), imageWorker.getBytesFromUrl(card.image_url))
-        }
-        assert new File("card_images/objective_cards/cards").listFiles().length == 247
-        assert new File("card_images/power_cards/cards").listFiles().length == 495
-//        byte[] bytes = imageWorker.getBytesFromUrl(objective_cards[0].image_url)
-//        Files.write(Paths.get("card1.png"), bytes)
-
-    }
 
     static void main2(String[] args) {
         def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
@@ -136,6 +94,91 @@ class GroovyGrabber {
         document.close();
 */
         println("Done!")
+    }
+
+    static void main(String[] args) {
+
+        // save card images to files
+        def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
+        def cards = dataFileJson.en.cards.byId.collect { it.getValue() }
+        println("All cards: ${cards.size()}")
+        cards.unique { a, b -> a.name <=> b.name }
+        println("Unique cards: ${cards.size()}")
+
+//        cards.sort { a, b -> a.warbandId as Integer <=> b.warbandId as Integer }
+//        printAllCards(cards)
+
+        def objective_cards = cards.findAll { it.type == "objective" }
+        println("objective_cards: $objective_cards.size")
+
+        def power_cards = cards.findAll { it.type != "objective" }
+        println("power_cards: $power_cards.size")
+
+        def imageWorker = new ImageWorker()
+
+        println("Downloading objective cards")
+//        objective_cards = objective_cards.subList(0, 5)
+        // todo use method from HttpWorker
+       /* objective_cards.indexed().each { index, card ->
+            def card_id = card.id
+            def warbandId = card.warbandId
+            println("$index: $card_id")
+            def pathToFile = Paths.get("card_images/objective_cards/cards/$warbandId/${card_id}.png")
+            Files.createDirectories(pathToFile.getParent())
+            Files.createFile(pathToFile)
+            Files.write(pathToFile, imageWorker.getBytesFromUrl(card.image_url))
+        }
+
+        println("Downloading power cards")
+//        power_cards = power_cards.subList(0, 5)
+        power_cards.indexed().each { index, card ->
+            def card_id = card.id
+            def warbandId = card.warbandId
+            println("$index: $card_id")
+            def pathToFile = Paths.get("card_images/power_cards/cards/$warbandId/${card_id}.png")
+            Files.createDirectories(pathToFile.getParent())
+            Files.createFile(pathToFile)
+            Files.write(pathToFile, imageWorker.getBytesFromUrl(card.image_url))
+        }*/
+
+
+        /*
+               power_cards.indexed().each { index, card ->
+                   def card_id = card.id
+                   def warbandId = card.warbandId
+                   println("$index: $card_id")
+                   Files.write(Paths.get("card_images/power_cards/cards/$warbandId/${card_id}.png"), imageWorker.getBytesFromUrl(card.image_url))
+               }*/
+//        def count = Files.newDirectoryStream(Paths.get("card_images/objective_cards/cards")).count()
+//        assert new File("card_images/objective_cards/cards").listFiles().length == 247
+//        assert new File("card_images/power_cards/cards").listFiles().length == 495
+//        byte[] bytes = imageWorker.getBytesFromUrl(objective_cards[0].image_url)
+//        Files.write(Paths.get("card1.png"), bytes)
+//        def sum = countFilesInDirectory(new File("card_images/objective_cards/cards"))
+//        println("Sum: $sum")
+    }
+
+    public BufferedImage wrapImageWithBorder(BufferedImage image, int border, Color borderColor) {
+        int dimensionIncrement = 2 * border;
+        BufferedImage newImage = new BufferedImage(image.getWidth() + dimensionIncrement, image.getHeight() + dimensionIncrement, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = newImage.createGraphics();
+        g2d.setPaint(borderColor);
+        g2d.fillRect(0, 0, newImage.getWidth(), newImage.getHeight());
+
+        g2d.drawImage(image, border, border, null);
+        return newImage;
+    }
+
+    static int countFilesInDirectory(File baseDir) {
+        def files = [];
+
+        def processFileClosure = {
+            println "working on ${it.canonicalPath}: "
+            files.add (it.canonicalPath);
+        }
+
+        baseDir.eachFileRecurse(FileType.FILES, processFileClosure);
     }
 
     private static void printWarbands(cards) {
