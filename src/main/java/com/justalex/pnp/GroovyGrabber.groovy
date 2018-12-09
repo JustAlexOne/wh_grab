@@ -19,6 +19,8 @@ import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+import static com.justalex.pnp.CardType.OBJECTIVE
+
 
 class GroovyGrabber {
 
@@ -114,60 +116,62 @@ class GroovyGrabber {
         def power_cards = cards.findAll { it.type != "objective" }
         println("power_cards: $power_cards.size")
 
+        objective_cards = objective_cards.subList(0, 3)
+        power_cards = power_cards.subList(0, 3)
+        def httpWorker = new HttpWorker()
+        def pathForObjectiveCards = Paths.get("card_images/objective_cards/cards")
+        def pathToPowerCards = Paths.get("card_images/power_cards/cards")
+        httpWorker.downloadImagesForCards(objective_cards, pathForObjectiveCards, OBJECTIVE.name().toLowerCase())
+        httpWorker.downloadImagesForCards(power_cards, pathToPowerCards, "power")
+
+        def objectiveCardsFiles = Files.list(pathForObjectiveCards).findAll {!it.getFileName().toString().startsWith(".")}
+        def powerCardsFiles = Files.list(pathToPowerCards).findAll {!it.getFileName().toString().startsWith(".")}
+        assert objectiveCardsFiles.size() == 3 // 247
+        assert powerCardsFiles.size() == 3 // 495
+//        assert Files.list(pathToPowerCards).count() == 495 example
         def imageWorker = new ImageWorker()
 
-        println("Downloading objective cards")
-//        objective_cards = objective_cards.subList(0, 5)
-        // todo use method from HttpWorker
-       /* objective_cards.indexed().each { index, card ->
-            def card_id = card.id
-            def warbandId = card.warbandId
-            println("$index: $card_id")
-            def pathToFile = Paths.get("card_images/objective_cards/cards/$warbandId/${card_id}.png")
-            Files.createDirectories(pathToFile.getParent())
-            Files.createFile(pathToFile)
-            Files.write(pathToFile, imageWorker.getBytesFromUrl(card.image_url))
+        objectiveCardsFiles.each {
+            def image = ImageIO.read(it)
+            def newImage = imageWorker.wrapImageWithBorder(image, 2, Color.RED)
+            def destFile = new File("card_images/objective_cards/cards_2", it.getName().replace(".png", "_2.png"))
+
+            println("destFile: $destFile")
+            ImageIO.write(newImage, "PNG", destFile)
         }
 
-        println("Downloading power cards")
-//        power_cards = power_cards.subList(0, 5)
-        power_cards.indexed().each { index, card ->
-            def card_id = card.id
-            def warbandId = card.warbandId
-            println("$index: $card_id")
-            def pathToFile = Paths.get("card_images/power_cards/cards/$warbandId/${card_id}.png")
-            Files.createDirectories(pathToFile.getParent())
-            Files.createFile(pathToFile)
-            Files.write(pathToFile, imageWorker.getBytesFromUrl(card.image_url))
-        }*/
+//        def bufferedImage = ImageIO.read(file)
+//        def imageWithBorder = imageWorker.wrapImageWithBorder(bufferedImage, 2, Color.RED)
+//        ImageIO.write(bufferedImage, "PNG", )
 
 
-        /*
-               power_cards.indexed().each { index, card ->
-                   def card_id = card.id
-                   def warbandId = card.warbandId
-                   println("$index: $card_id")
-                   Files.write(Paths.get("card_images/power_cards/cards/$warbandId/${card_id}.png"), imageWorker.getBytesFromUrl(card.image_url))
-               }*/
-//        def count = Files.newDirectoryStream(Paths.get("card_images/objective_cards/cards")).count()
-//        assert new File("card_images/objective_cards/cards").listFiles().length == 247
 //        assert new File("card_images/power_cards/cards").listFiles().length == 495
-//        byte[] bytes = imageWorker.getBytesFromUrl(objective_cards[0].image_url)
-//        Files.write(Paths.get("card1.png"), bytes)
-//        def sum = countFilesInDirectory(new File("card_images/objective_cards/cards"))
-//        println("Sum: $sum")
-    }
 
-    public BufferedImage wrapImageWithBorder(BufferedImage image, int border, Color borderColor) {
-        int dimensionIncrement = 2 * border;
-        BufferedImage newImage = new BufferedImage(image.getWidth() + dimensionIncrement, image.getHeight() + dimensionIncrement, BufferedImage.TYPE_INT_ARGB);
+//        println("Downloading objective cards")
+//        objective_cards = objective_cards.subList(0, 5)
+        // todo use method from HttpWorker
+        /* objective_cards.indexed().each { index, card ->
+             def card_id = card.id
+             def warbandId = card.warbandId
+             println("$index: $card_id")
+             def pathToFile = Paths.get("card_images/objective_cards/cards/$warbandId/${card_id}.png")
+             Files.createDirectories(pathToFile.getParent())
+             Files.createFile(pathToFile)
+             Files.write(pathToFile, imageWorker.getBytesFromUrl(card.image_url))
+         }
 
-        Graphics2D g2d = newImage.createGraphics();
-        g2d.setPaint(borderColor);
-        g2d.fillRect(0, 0, newImage.getWidth(), newImage.getHeight());
-
-        g2d.drawImage(image, border, border, null);
-        return newImage;
+         println("Downloading power cards")
+ //        power_cards = power_cards.subList(0, 5)
+         power_cards.indexed().each { index, card ->
+             def card_id = card.id
+             def warbandId = card.warbandId
+             println("$index: $card_id")
+             def pathToFile = Paths.get("card_images/power_cards/cards/$warbandId/${card_id}.png")
+             Files.createDirectories(pathToFile.getParent())
+             Files.createFile(pathToFile)
+             Files.write(pathToFile, imageWorker.getBytesFromUrl(card.image_url))
+         }*/
+        println("Done")
     }
 
     static int countFilesInDirectory(File baseDir) {
@@ -175,7 +179,7 @@ class GroovyGrabber {
 
         def processFileClosure = {
             println "working on ${it.canonicalPath}: "
-            files.add (it.canonicalPath);
+            files.add(it.canonicalPath);
         }
 
         baseDir.eachFileRecurse(FileType.FILES, processFileClosure);
