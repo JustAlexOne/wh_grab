@@ -28,12 +28,20 @@ class PdfWorker {
     private int cardsPerPage
     private File destinationFile
     Document document
+    private static final int marginLeft = 10
+    private static final int marginRight = 10
+    private static final int marginTop = 25
+    private static final int marginBottom = 10
+
+    private static final float tableWidth = 1153f
+    private static final float cellPadding = 7f
+
     private static final int documentMargin = 10
 
     PdfWorker(File destinationFile) {
         this.destinationFile = destinationFile
 //        document = new Document(new RectangleReadOnly(907,1276), 15, 15, 20, 20)
-        document = new Document(new RectangleReadOnly(1191,842), documentMargin, documentMargin, documentMargin, documentMargin)
+        document = new Document(new RectangleReadOnly(1191,842), marginLeft, marginRight, marginTop, marginBottom)
 //        public static final Rectangle A3 = new RectangleReadOnly(842,1191);
         println("Page size: ${document.getPageSize()}")
         // A4 - Page size:  w: 595 h: 842
@@ -200,10 +208,11 @@ class PdfWorker {
 //                table.setWidthPercentage(98)
 //        float resWidth = 655.74805f
 //        float resWidth = 535.74805f * 2 // 1071.4961
-        float resWidth = 1110f
-
+        float resWidth = tableWidth
+//        float resWidth = 1153f
 //        resWidth = 540f
-        println("Table width: $resWidth")
+        println("tableWidth: $tableWidth")
+        println("cellPadding: $cellPadding")
 //        float resWidth = 178.58268f * 3f
         table.setTotalWidth(resWidth)
         table.setLockedWidth(true)
@@ -215,14 +224,13 @@ class PdfWorker {
     private PdfPCell initTableCellWithImage(Image image) {
         PdfPCell cell = new PdfPCell()
 //        cell.setPadding(0.278f)
-        cell.setPadding(0.35f) // todo play with padding
+        cell.setPadding(cellPadding) // todo play with padding
 //        cell.setPaddingBottom(0.1f)
 //        cell.setPaddingTop(0.1f)
 //        cell.setPaddingLeft(0.1f)
 //        cell.setPaddingRight(0.1f)
         cell.setBorderColor(BaseColor.BLACK)
 //        cell.setBorderWidth(5f)
-
         cell.setImage(image)
         return cell
     }
