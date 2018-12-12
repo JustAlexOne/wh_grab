@@ -52,7 +52,7 @@ class GroovyGrabber {
 //        printAllCards(cards)
 
         def destinationFile = "cards_pnp.pdf"
-        def pdfWorker = new PdfWorker(destinationFile, 18)
+        def pdfWorker = new PdfWorker(destinationFile)
         def imageWorker = new ImageWorker()
 //        cards = cards.findAll{it.id in ["S010", "S011", "S004", "S005", "S020", "S021", "S022", "NV471", "S001", "S002", "S003", "S007"]}
 //        println(cards.collect {"$it.id type: $it.type"})
@@ -61,7 +61,7 @@ class GroovyGrabber {
 
         imageWorker.downloadAndSetImagesForCards(cards)
 
-        pdfWorker.addCardsToPdf(cards)
+        pdfWorker.addCardsToPdf(cards, 6, 3)
 
         pdfWorker.finish() // todo uncomment
 //        pdfWorker.insertPageNumbers(destinationFile, "cards_pnp_numbered.pdf")

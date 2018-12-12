@@ -23,15 +23,17 @@ class PdfWorker {
     static final File IMAGE_OBJECTIVE_CARD_BACK = new File("src/main/resources/data/card_backs/objective_back.png")
     static final File IMAGE_POWER_CARD_BACK = new File("src/main/resources/data/card_backs/power_back.png")
     static final File IMAGE_EMPTY = new File("src/main/resources/data/card_backs/empty_card.png")
-    private int columns;
+    private int columns
+    private int rows
+    private int cardsPerPage
     private File destinationFile
     Document document
+    private static final int documentMargin = 10
 
-    PdfWorker(File destinationFile, int columns) {
+    PdfWorker(File destinationFile) {
         this.destinationFile = destinationFile
-        this.columns = columns
 //        document = new Document(new RectangleReadOnly(907,1276), 15, 15, 20, 20)
-        document = new Document(new RectangleReadOnly(1191,842), 5, 5, 5, 5)
+        document = new Document(new RectangleReadOnly(1191,842), documentMargin, documentMargin, documentMargin, documentMargin)
 //        public static final Rectangle A3 = new RectangleReadOnly(842,1191);
         println("Page size: ${document.getPageSize()}")
         // A4 - Page size:  w: 595 h: 842
@@ -42,8 +44,8 @@ class PdfWorker {
         document.open()
     }
 
-    PdfWorker(String fileName, int columns) {
-        this(new File(fileName), columns)
+    PdfWorker(String fileName) {
+        this(new File(fileName))
     }
 
     static void main2(String[] args) {
@@ -115,8 +117,8 @@ class PdfWorker {
     }
 
     private void addEmptyCellsToCompleteTableRow(int imagesSize, PdfPTable table) {
-        int extraCells = (imagesSize % columns)
-        extraCells = extraCells == 0 ? 0 : columns - extraCells
+        int extraCells = (imagesSize % cardsPerPage)
+        extraCells = extraCells == 0 ? 0 : cardsPerPage - extraCells
         println("Adding $extraCells extra cells")
         extraCells.times {
             table.addCell(initEmptyCell())
@@ -127,10 +129,13 @@ class PdfWorker {
         document.close()
     }
 
-    def addCardsToPdf(List cards) {
+    def addCardsToPdf(List cards, int columns, int rows) {
+        this.columns = columns
+        this.rows = rows
+        this.cardsPerPage = columns * rows
         println("Adding cards to pdf")
         validateCardsImageBytes(cards)
-        def cardsBy9 = cards.collate(columns)
+        def cardsBy9 = cards.collate(cardsPerPage)
 //        println("Last size: ${cardsBy9.last().size()}")
 //        cardsBy9.last().each {println(it)}
         PdfPTable table = initPdfTable()
@@ -151,15 +156,15 @@ class PdfWorker {
     def putCardBackingsIntoTable(List list_9_cards, PdfPTable table) {
         println("Putting card backings")
         def cardsSize = list_9_cards.size()
-        assert cardsSize <= columns
-        if (cardsSize < columns) {
-            int missingCells = columns - (cardsSize % columns)
+        assert cardsSize <= cardsPerPage
+        if (cardsSize < cardsPerPage) {
+            int missingCells = cardsPerPage - (cardsSize % cardsPerPage)
             missingCells.times { list_9_cards.add("") }
         }
 //        println("Cards: $list_9_cards")
 //        list_9_cards.each {println(it.id)}
 
-        def list_by_3_cards = list_9_cards.collate(3)
+        def list_by_3_cards = list_9_cards.collate(columns)
 //        println("Basic")
 //        list_by_3_cards.each { println(it) }
         def list_by_3_cards_reversed = list_by_3_cards.collect { it.reverse() }
@@ -190,10 +195,27 @@ class PdfWorker {
 //        return new PdfPCell(new Phrase("empty"))
     }
 
+    private PdfPTable initPdfTable() {
+        def table = new PdfPTable(columns)
+//                table.setWidthPercentage(98)
+//        float resWidth = 655.74805f
+//        float resWidth = 535.74805f * 2 // 1071.4961
+        float resWidth = 1110f
+
+//        resWidth = 540f
+        println("Table width: $resWidth")
+//        float resWidth = 178.58268f * 3f
+        table.setTotalWidth(resWidth)
+        table.setLockedWidth(true)
+//        table.setSpacingBefore(0f);
+//        table.setSpacingAfter(0f);
+        return table
+    }
+
     private PdfPCell initTableCellWithImage(Image image) {
         PdfPCell cell = new PdfPCell()
 //        cell.setPadding(0.278f)
-        cell.setPadding(0.35f)
+        cell.setPadding(0.35f) // todo play with padding
 //        cell.setPaddingBottom(0.1f)
 //        cell.setPaddingTop(0.1f)
 //        cell.setPaddingLeft(0.1f)
@@ -205,23 +227,8 @@ class PdfWorker {
         return cell
     }
 
-    private PdfPTable initPdfTable() {
-        def table = new PdfPTable(3)
-//                table.setWidthPercentage(98)
-//        float resWidth = 655.74805f
-        float resWidth = 535.74805f
-//        resWidth = 540f
-        println("Table width: $resWidth")
-//        float resWidth = 178.58268f * 3f
-        table.setTotalWidth(resWidth)
-        table.setLockedWidth(true)
-//        table.setSpacingBefore(0f);
-//        table.setSpacingAfter(0f);
-        return table
-    }
-
     def put9CardsIntoTable(List cardsCollatedBy9, PdfPTable table) {
-        assert cardsCollatedBy9.size() <= columns
+        assert cardsCollatedBy9.size() <= cardsPerPage
         println("Putting ${cardsCollatedBy9.size()} cards")
         cardsCollatedBy9.each { card ->
 //            image.scalePercent(30)
