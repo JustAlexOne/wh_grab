@@ -7,6 +7,7 @@ import com.itextpdf.text.Element
 import com.itextpdf.text.Image
 import com.itextpdf.text.PageSize
 import com.itextpdf.text.Phrase
+import com.itextpdf.text.Rectangle
 import com.itextpdf.text.RectangleReadOnly
 import com.itextpdf.text.pdf.ColumnText
 import com.itextpdf.text.pdf.PdfContentByte
@@ -29,8 +30,9 @@ class PdfWorker {
     PdfWorker(File destinationFile, int columns) {
         this.destinationFile = destinationFile
         this.columns = columns
-        document = new Document(new RectangleReadOnly(907,1276), 15, 15, 20, 20)
-//        document = new Document(PageSize.A3, 5, 5, 5, 5)
+//        document = new Document(new RectangleReadOnly(907,1276), 15, 15, 20, 20)
+        document = new Document(new RectangleReadOnly(1191,842), 5, 5, 5, 5)
+//        public static final Rectangle A3 = new RectangleReadOnly(842,1191);
         println("Page size: ${document.getPageSize()}")
         // A4 - Page size:  w: 595 h: 842
         // A3 - Page size:  w: 842 h: 1191 - 297 - 420
@@ -219,7 +221,7 @@ class PdfWorker {
     }
 
     def put9CardsIntoTable(List cardsCollatedBy9, PdfPTable table) {
-        assert cardsCollatedBy9.size() <= 9
+        assert cardsCollatedBy9.size() <= columns
         println("Putting ${cardsCollatedBy9.size()} cards")
         cardsCollatedBy9.each { card ->
 //            image.scalePercent(30)
