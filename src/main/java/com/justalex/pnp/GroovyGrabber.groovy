@@ -2,6 +2,7 @@ package com.justalex.pnp
 
 import com.itextpdf.text.Document
 import com.itextpdf.text.Image
+import com.itextpdf.text.PageSize
 import com.itextpdf.text.pdf.PdfWriter
 import com.mashape.unirest.http.Unirest
 import groovy.io.FileType
@@ -24,7 +25,7 @@ import static com.justalex.pnp.CardType.OBJECTIVE
 
 class GroovyGrabber {
 
-    static void main2(String[] args) {
+    static void main(String[] args) {
         def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
 //        def dataFileJson = PnpWorker.readDataFile("src/main/resources/a_10_cards.json")
 
@@ -51,19 +52,19 @@ class GroovyGrabber {
 //        printAllCards(cards)
 
         def destinationFile = "cards_pnp.pdf"
-        def pdfWorker = new PdfWorker(destinationFile)
+        def pdfWorker = new PdfWorker(destinationFile, 9)
         def imageWorker = new ImageWorker()
 //        cards = cards.findAll{it.id in ["S010", "S011", "S004", "S005", "S020", "S021", "S022", "NV471", "S001", "S002", "S003", "S007"]}
 //        println(cards.collect {"$it.id type: $it.type"})
 //        Collections.shuffle(cards)
-//        cards = cards.subList(0,6)
+        cards = cards.subList(0,5)
 
         imageWorker.downloadAndSetImagesForCards(cards)
 
         pdfWorker.addCardsToPdf(cards)
 
         pdfWorker.finish() // todo uncomment
-        pdfWorker.insertPageNumbers(destinationFile, "cards_pnp_numbered.pdf")
+//        pdfWorker.insertPageNumbers(destinationFile, "cards_pnp_numbered.pdf")
 
         // todo implement card backs
         /*
@@ -98,8 +99,81 @@ class GroovyGrabber {
         println("Done!")
     }
 
-    static void main(String[] args) {
+    static void main2(String[] args) {
+        // save card images to files
+        def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
+        def cards = dataFileJson.en.cards.byId.collect { it.getValue() }
+        println("All cards: ${cards.size()}")
+        cards.unique { a, b -> a.name <=> b.name }
+        println("Unique cards: ${cards.size()}")
+//        cards.sort { a, b -> a.warbandId as Integer <=> b.warbandId as Integer }
+//        printAllCards(cards)
+        def objective_cards = cards.findAll { it.type == "objective" }
+        println("objective_cards: $objective_cards.size")
+        def power_cards = cards.findAll { it.type != "objective" }
+        println("power_cards: $power_cards.size")
 
+        objective_cards = objective_cards.subList(0, 1)
+        power_cards = power_cards.subList(0, 1)
+        def httpWorker = new HttpWorker()
+        def imageWorker = new ImageWorker()
+
+        String baseFolder = "card_images2"
+        def pathForObjectiveCards = Paths.get(baseFolder, "objective_cards/cards")
+        def pathToPowerCards = Paths.get(baseFolder, "power_cards/cards")
+        imageWorker.downloadAndSetImagesForCards(objective_cards)
+        imageWorker.downloadAndSetImagesForCards(power_cards)
+
+//        httpWorker.downloadImagesForCards(objective_cards, pathForObjectiveCards, OBJECTIVE.name().toLowerCase())
+//        httpWorker.downloadImagesForCards(power_cards, pathToPowerCards, "power")
+
+//        def objectiveCardsFiles = Files.list(pathForObjectiveCards).findAll {!it.getFileName().toString().startsWith(".")}
+//        def powerCardsFiles = Files.list(pathToPowerCards).findAll {!it.getFileName().toString().startsWith(".")}
+//        assert objectiveCardsFiles.size() == 3 // 247
+//        assert powerCardsFiles.size() == 3 // 495
+//        assert objectiveCardsFiles.size() == 247
+//        assert powerCardsFiles.size() == 495
+
+//        objective_cards.each {
+//            BufferedImage image = ImageIO.read(new ByteArrayInputStream(it.imageBytes))
+//            def borderSize = 20
+//            def newImage = imageWorker.wrapImageWithBorder(image, borderSize, Color.GRAY)
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            ImageIO.write(newImage, "PNG", baos)
+//            baos.flush()
+//            it.imageBytes = baos.toByteArray()
+//            baos.close()
+//        }
+//
+//        def pdfWorker = new PdfWorker("cards_wrapped.pdf")
+//        pdfWorker.addCardsToPdf(objective_cards)
+//        pdfWorker.finish()
+
+
+
+
+//        objective_cards.each {
+//            BufferedImage image = ImageIO.read(new ByteArrayInputStream(it.imageBytes))
+//            def borderSize = 40
+//            def newImage = imageWorker.wrapImageWithBorder(image, borderSize, Color.GRAY)
+//            def destFile = new File("card_images2/objective_cards/cards", "${it.id}_${borderSize}.png")
+//
+//            println("destFile: $destFile")
+//            def pathToFile = Paths.get(destFile.getAbsolutePath())
+//            if (Files.notExists(pathToFile)) {
+//                Files.createFile(pathToFile)
+//            }
+//            ImageIO.write(newImage, "PNG", destFile)
+//        }
+
+//        def bufferedImage = ImageIO.read(file)
+//        def imageWithBorder = imageWorker.wrapImageWithBorder(bufferedImage, 2, Color.RED)
+//        ImageIO.write(bufferedImage, "PNG", )
+
+
+    }
+
+    static void saveImagesToFolder() {
         // save card images to files
         def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
         def cards = dataFileJson.en.cards.byId.collect { it.getValue() }
@@ -116,8 +190,8 @@ class GroovyGrabber {
         def power_cards = cards.findAll { it.type != "objective" }
         println("power_cards: $power_cards.size")
 
-        objective_cards = objective_cards.subList(0, 3)
-        power_cards = power_cards.subList(0, 3)
+//        objective_cards = objective_cards.subList(0, 3)
+//        power_cards = power_cards.subList(0, 3)
         def httpWorker = new HttpWorker()
         def pathForObjectiveCards = Paths.get("card_images/objective_cards/cards")
         def pathToPowerCards = Paths.get("card_images/power_cards/cards")
@@ -126,9 +200,11 @@ class GroovyGrabber {
 
         def objectiveCardsFiles = Files.list(pathForObjectiveCards).findAll {!it.getFileName().toString().startsWith(".")}
         def powerCardsFiles = Files.list(pathToPowerCards).findAll {!it.getFileName().toString().startsWith(".")}
-        assert objectiveCardsFiles.size() == 3 // 247
-        assert powerCardsFiles.size() == 3 // 495
-//        assert Files.list(pathToPowerCards).count() == 495 example
+//        assert objectiveCardsFiles.size() == 3 // 247
+//        assert powerCardsFiles.size() == 3 // 495
+        assert objectiveCardsFiles.size() == 247
+        assert powerCardsFiles.size() == 495
+        /*
         def imageWorker = new ImageWorker()
 
         objectiveCardsFiles.each {

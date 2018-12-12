@@ -7,6 +7,7 @@ import com.itextpdf.text.Element
 import com.itextpdf.text.Image
 import com.itextpdf.text.PageSize
 import com.itextpdf.text.Phrase
+import com.itextpdf.text.RectangleReadOnly
 import com.itextpdf.text.pdf.ColumnText
 import com.itextpdf.text.pdf.PdfContentByte
 import com.itextpdf.text.pdf.PdfPCell
@@ -21,19 +22,26 @@ class PdfWorker {
     static final File IMAGE_OBJECTIVE_CARD_BACK = new File("src/main/resources/data/card_backs/objective_back.png")
     static final File IMAGE_POWER_CARD_BACK = new File("src/main/resources/data/card_backs/power_back.png")
     static final File IMAGE_EMPTY = new File("src/main/resources/data/card_backs/empty_card.png")
-
+    private int columns;
     private File destinationFile
     Document document
 
-    PdfWorker(File destinationFile) {
+    PdfWorker(File destinationFile, int columns) {
         this.destinationFile = destinationFile
-        document = new Document(PageSize.A4, 15, 15, 20, 20)
+        this.columns = columns
+        document = new Document(new RectangleReadOnly(907,1276), 15, 15, 20, 20)
+//        document = new Document(PageSize.A3, 5, 5, 5, 5)
+        println("Page size: ${document.getPageSize()}")
+        // A4 - Page size:  w: 595 h: 842
+        // A3 - Page size:  w: 842 h: 1191 - 297 - 420
+        // index - 2.8357 * 450 = 1276
+        // index - 2.8357 * 320 = 907
         PdfWriter.getInstance(document, new FileOutputStream(destinationFile))
         document.open()
     }
 
-    PdfWorker(String fileName) {
-        this(new File(fileName))
+    PdfWorker(String fileName, int columns) {
+        this(new File(fileName), columns)
     }
 
     static void main2(String[] args) {
@@ -105,8 +113,8 @@ class PdfWorker {
     }
 
     private void addEmptyCellsToCompleteTableRow(int imagesSize, PdfPTable table) {
-        int extraCells = (imagesSize % 9)
-        extraCells = extraCells == 0 ? 0 : 9 - extraCells
+        int extraCells = (imagesSize % columns)
+        extraCells = extraCells == 0 ? 0 : columns - extraCells
         println("Adding $extraCells extra cells")
         extraCells.times {
             table.addCell(initEmptyCell())
@@ -120,7 +128,7 @@ class PdfWorker {
     def addCardsToPdf(List cards) {
         println("Adding cards to pdf")
         validateCardsImageBytes(cards)
-        def cardsBy9 = cards.collate(9)
+        def cardsBy9 = cards.collate(columns)
 //        println("Last size: ${cardsBy9.last().size()}")
 //        cardsBy9.last().each {println(it)}
         PdfPTable table = initPdfTable()
@@ -141,9 +149,9 @@ class PdfWorker {
     def putCardBackingsIntoTable(List list_9_cards, PdfPTable table) {
         println("Putting card backings")
         def cardsSize = list_9_cards.size()
-        assert cardsSize <= 9
-        if (cardsSize < 9) {
-            int missingCells = 9 - (cardsSize % 9)
+        assert cardsSize <= columns
+        if (cardsSize < columns) {
+            int missingCells = columns - (cardsSize % columns)
             missingCells.times { list_9_cards.add("") }
         }
 //        println("Cards: $list_9_cards")
@@ -188,7 +196,7 @@ class PdfWorker {
 //        cell.setPaddingTop(0.1f)
 //        cell.setPaddingLeft(0.1f)
 //        cell.setPaddingRight(0.1f)
-        cell.setBorderColor(BaseColor.WHITE)
+        cell.setBorderColor(BaseColor.BLACK)
 //        cell.setBorderWidth(5f)
 
         cell.setImage(image)
@@ -198,6 +206,7 @@ class PdfWorker {
     private PdfPTable initPdfTable() {
         def table = new PdfPTable(3)
 //                table.setWidthPercentage(98)
+//        float resWidth = 655.74805f
         float resWidth = 535.74805f
 //        resWidth = 540f
         println("Table width: $resWidth")
