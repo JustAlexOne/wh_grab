@@ -6,6 +6,9 @@ import javax.imageio.ImageIO
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 
 class ImageWorker {
@@ -44,7 +47,7 @@ class ImageWorker {
         }
     }
 
-    public BufferedImage wrapImageWithBorder(BufferedImage image, int border, Color borderColor) {
+    BufferedImage wrapImageWithBorder(BufferedImage image, int border, Color borderColor) {
         int dimensionIncrement = 2 * border;
         BufferedImage newImage = new BufferedImage(image.getWidth() + dimensionIncrement, image.getHeight() + dimensionIncrement, BufferedImage.TYPE_INT_ARGB);
 
@@ -54,6 +57,41 @@ class ImageWorker {
 
         g2d.drawImage(image, border, border, null);
         return newImage;
+    }
+
+    void wrapImagesAndSaveToFolder(List cards, Path destinationFolder, int borderSize, String cardType) {
+        assert destinationFolder.toString().contains(borderSize as String)
+        assert destinationFolder.toString().contains(cardType)
+
+        println("Wrapping and saving images for [$cards.size] $cardType cards to folder [$destinationFolder]")
+        cards.each {
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(it.imageBytes))
+            def newImage = wrapImageWithBorder(image, borderSize, Color.WHITE)
+            Path pathToFile = destinationFolder.resolve("${it.id}_${borderSize}.png")
+            println("pathToFile: $pathToFile")
+            createPath(pathToFile)
+            ImageIO.write(newImage, "PNG", pathToFile.toFile())
+        }
+    }
+
+    void wrapCardBackWithBorder(File cardBackImage, Path destinationFolder, int borderSize, String cardType) {
+        assert destinationFolder.toString().contains(borderSize as String)
+        assert destinationFolder.toString().contains(cardType)
+
+        println("Wrapping card back [${cardBackImage.getName()}] to folder [$destinationFolder]")
+        BufferedImage image = ImageIO.read(cardBackImage)
+        def newImage = wrapImageWithBorder(image, borderSize, Color.WHITE)
+        Path pathToFile = destinationFolder.resolve(cardBackImage.getName())
+        println("pathToFile: $pathToFile")
+        createPath(pathToFile)
+        ImageIO.write(newImage, "PNG", pathToFile.toFile())
+    }
+
+    private void createPath(Path pathToFile) {
+        Files.createDirectories(pathToFile.getParent())
+        if (Files.notExists(pathToFile)) {
+            Files.createFile(pathToFile)
+        }
     }
 
 }
