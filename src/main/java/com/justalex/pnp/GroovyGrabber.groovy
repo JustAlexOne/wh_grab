@@ -26,7 +26,25 @@ import static com.justalex.pnp.CardType.OBJECTIVE
 class GroovyGrabber {
 
     static void main(String[] args) {
-        saveAndWrapWithBorder()
+//        saveAndWrapWithBorder()
+        def dataFileJson = PnpWorker.readDataFile("src/main/resources/dataFile_unescaped.json")
+        def cards = dataFileJson.en.cards.byId.collect { it.getValue() }
+        println("All cards: ${cards.size()}")
+        cards.unique { a, b -> a.name <=> b.name }
+        println("Unique cards: ${cards.size()}")
+        def objective_cards = cards.findAll { it.type == "objective" }.findAll {it.warbandId == "0"}
+//        objective_cards.each {
+//            it.id = it.id.replaceAll("\\D+", "") as Integer
+//        }
+        objective_cards.sort {a, b -> a.id <=> b.id}
+//        objective_cards.sort {a, b -> a.id.replaceAll("\\D+", "") as Integer <=> b.id.replaceAll("\\D+", "") as Integer}
+        println("objective_cards: $objective_cards.size")
+//        objective_cards.unique {a, b -> a.id <=> b.id}
+        println("objective_cards unique by id: $objective_cards.size")
+//        cards.sort { a, b -> a.warbandId as Integer <=> b.warbandId as Integer }
+
+        printAllCards(objective_cards)
+//        printAllCards(objective_cards.subList(0, 5))
     }
 
     static void saveAndWrapWithBorder() {
@@ -253,7 +271,12 @@ class GroovyGrabber {
 
     static def printAllCards(List list) {
         list.indexed().each { index, it ->
-            println("$index card: setId=$it.setId, warbandId=$it.warbandId, type=$it.type, id=$it.id, name=$it.name, text=$it.rulesText")
+            println("${tabluateStr(index as String, 3)}card: setId=${tabluateStr(it.setId, 2)} warbandId=${tabluateStr(it.warbandId, 2)} type=${tabluateStr(it.type, 9)} id=$it.id, name=$it.name, text=$it.rulesText, imagUrl=$it.image_url")
+//            println("$index card: setId=$it.setId, ${getSpaces(it.setId, 2)} warbandId=$it.warbandId, type=$it.type, id=$it.id, name=$it.name, text=$it.rulesText, imagUrl=$it.image_url")
         }
+    }
+
+    static String tabluateStr(String str, int max) {
+        return "$str, ${" " * (max - str.length())}"
     }
 }
